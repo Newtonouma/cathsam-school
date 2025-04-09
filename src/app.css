@@ -1,0 +1,26 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Add your custom base styles or theme variables here */
+body {
+    /* Apply the red theme variables globally if desired,
+       or apply a class to the body in app.html/layout */
+    --primary-red: #e53e3e;
+    --secondary-red: #c53030;
+    --light-red: #fc8181;
+  }
+  
+  /* Example: Define theme utility classes */
+  @layer components {
+    .red-theme {
+      --primary-red: #e53e3e;
+      --secondary-red: #c53030;
+      --light-red: #fc8181;
+    }
+  }
+  
+  /* Custom carousel height (or define in Carousel.svelte) */
+  .carousel-container {
+      height: 500px; /* Adjust as needed */
+  }
