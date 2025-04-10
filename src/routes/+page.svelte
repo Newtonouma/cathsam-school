@@ -108,57 +108,77 @@
 <!-- End Programs Section -->
 
   
-  <!-- Section 3: Gallery -->
-  <section class="py-16">
-     <div class="container mx-auto px-4">
-          <h2 class="text-3xl font-bold text-red-600 text-center mb-12">Our Gallery</h2>
-  
-          <!-- Main school picture and facilities -->
-          <div class="flex flex-col md:flex-row mb-12 gap-6">
-               <div class="md:w-2/3">
-                  <!-- Main Image -->
-                   <div class="relative rounded-lg overflow-hidden h-96">
-                       <img src={mainGallery.main} alt="Main School Building" class="w-full h-full object-cover">
-                       <!-- Overlay -->
-                   </div>
-               </div>
-               <div class="md:w-1/3 grid grid-cols-1 gap-4">
-                  <!-- Side Images -->
-                   <div class="relative rounded-lg overflow-hidden h-44">
-                       <img src={mainGallery.side1} alt="Library" class="w-full h-full object-cover">
-                       <!-- Overlay -->
-                   </div>
-                    <div class="relative rounded-lg overflow-hidden h-44">
-                       <img src={mainGallery.side2} alt="Tae kwondo" class="w-full h-full object-cover">
-                       <!-- Overlay -->
-                   </div>
-                   <div class="relative rounded-lg overflow-hidden h-44">
-                     <img src={mainGallery.side3} alt="Playground" class="w-full h-full object-cover">
-                     <!-- Overlay -->
-                 </div>
 
-               </div>
-          </div>
-  
-          <!-- Small images gallery -->
-      <!--     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-               {#each smallGallery as item}
-                  <div class="relative rounded-lg overflow-hidden h-48 group">
-                      <img src={item.img} alt={item.title} class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
-                      <div class="absolute inset-0 bg-black bg-opacity-30 flex items-end">
-                          <div class="p-3 text-white">
-                          <h4 class="text-lg font-semibold">{item.title}</h4>
-                          </div>
-                      </div>
-                  </div>
-               {/each}
-          </div>-->
-  
-           <div class="text-center mt-8">
-              <a href="/gallery" class="inline-block bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition duration-300">View Full Gallery</a>
-          </div>
+<!-- Section 3: Gallery -->
+<section class="py-16">
+   <div class="container mx-auto px-4">
+     <h2 class="text-3xl font-bold text-red-600 text-center mb-12">Our Gallery</h2>
+ 
+     
+     <div class="relative rounded-lg overflow-hidden shadow-xl">
+ 
+     
+       <div class="aspect-w-16 aspect-h-9 md:aspect-h-7 lg:aspect-h-6 xl:aspect-h-5">
+         <img
+           src={mainGallery.main}
+           alt="Main School Campus view - blurred background"
+           class="w-full h-full object-cover blur-md md:blur-lg" 
+         />
+       </div>
+ 
+     
+       <div class="absolute inset-0 bg-black bg-opacity-30 flex justify-end p-3 sm:p-4 md:p-6"> 
+ 
+       
+          <div class="w-1/2 sm:w-2/5 md:w-1/3 lg:w-1/4 h-full flex flex-col gap-3 md:gap-4">
+ 
+        
+             <a href="/gallery/classroom" aria-label="View Classroom Gallery" class="block flex-1 relative rounded-md md:rounded-lg overflow-hidden shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
+               <img
+                 src={mainGallery.side1}
+                 alt="Classroom"
+                 class="w-full h-full object-cover" 
+               />
+             </a>
+ 
+            
+              <a href="/gallery/activities" aria-label="View Tae Kwon Do Gallery" class="block flex-1 relative rounded-md md:rounded-lg overflow-hidden shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
+               <img
+                 src={mainGallery.side2}
+                 alt="Tae kwondo activity"
+                 class="w-full h-full object-cover"
+               />
+             </a>
+ 
+         
+              <a href="/gallery/playground" aria-label="View Playground Gallery" class="block flex-1 relative rounded-md md:rounded-lg overflow-hidden shadow-md hover:shadow-xl hover:scale-105 transition-all duration-300 ease-in-out">
+               <img
+                 src={mainGallery.side3}
+                 alt="Playground"
+                 class="w-full h-full object-cover" 
+               />
+             </a>
+ 
+           </div> 
+       </div>
+ 
+     </div> 
+ 
+     
+     <div class="text-center mt-8">
+        <a href="/gallery" class="inline-block bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition duration-300">
+            View Full Gallery
+        </a>
      </div>
-  </section>
+ 
+   </div> 
+ </section>
+
+ <!-- End Section 3 -->
+ 
+ <!-- Keep Call to Action Section -->
+ <!-- ... -->
+
   
   <!-- Call to Action -->
   <section class="py-16 bg-red-600 text-white">
