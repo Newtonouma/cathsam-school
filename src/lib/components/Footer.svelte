@@ -3,7 +3,7 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
         <!-- Column 1: About -->
         <div>
-          <h3 class="text-xl font-bold mb-4">Modern School</h3>
+          <h3 class="text-xl font-bold mb-4">Cathsam School</h3>
           <p class="mb-4 text-gray-400">Providing quality education since 1995.</p>
           <div class="flex space-x-4">
             <a href="www.facebook.com" class="text-gray-400 hover:text-white" aria-label="Facebook">
@@ -44,15 +44,23 @@
            <ul class="space-y-2 text-gray-400">
               <li class="flex items-start space-x-2">
                   <!-- Address Icon SVG -->
-                  <span>123 Education Lane, Knowledge City, 12345</span>
+                  
+                  <span>Umoja Campus (Pre-School, Lower & Junior School)</span>
+                  
               </li>
+              <li class="flex items-start space-x-2">
+                <!-- Address Icon SVG -->
+                
+                <span>Kamulu Campus (Pre-School, Lower & Junior School-Mixed Day & Boarding)</span>
+               
+            </li>
                <li class="flex items-start space-x-2">
                   <!-- Phone Icon SVG -->
-                  <a href="tel:+1234567890" class="hover:text-white">(123) 456-7890</a>
+                  <a href="tel:+254726759990" class="hover:text-white">Tel.: 0726-759990, 0733-516160</a>
               </li>
                <li class="flex items-start space-x-2">
                   <!-- Email Icon SVG -->
-                  <a href="mailto:info@modernschool.com" class="hover:text-white">info@modernschool.com</a>
+                  <a href="mailto:info@modernschool.com" class="hover:text-white">info@cathsamschool.ac.ke</a>
               </li>
            </ul>
         </div>
@@ -62,3 +70,4 @@
       </div>
     </div>
   </footer>
+  
