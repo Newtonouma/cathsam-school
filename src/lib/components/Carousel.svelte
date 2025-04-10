@@ -3,10 +3,10 @@
     import { fade } from 'svelte/transition';
 
     export let slides = [
-      { img: '/images/carousel/admission.jpeg', title: 'Admissions Open', desc: 'Join our community of excellence and innovation' },
+      { img: '/images/carousel/admissions.jpg', title: 'Admissions Open', desc: 'Join our community of excellence and innovation' },
       { img: '/images/carousel/lab.jpg', title: 'State-of-the-art Labs', desc: 'Hands-on learning with modern equipment' },
       { img: '/images/carousel/concert.jpg', title: 'Annual Concert', desc: 'Celebrating talent and creativity' },
-      { img: '/images/carousel/karate.jpeg', title: 'Karate Training', desc: 'Building discipline and physical fitness' },
+      { img: '/images/carousel/Karate.jpeg', title: 'Karate Training', desc: 'Building discipline and physical fitness' },
       { img: '/images/carousel/sports.jpg', title: 'Sports Excellence', desc: 'Developing teamwork and leadership' },
     ];
 
@@ -47,7 +47,7 @@
 
 </script>
 
-<div class="relative overflow-hidden carousel-container">
+<div class="relative overflow-hidden carousel-container h-[600px]">
     <!-- Carousel images -->
     {#each slides as slide, index (index)}
       {#if index === activeSlide}
@@ -106,3 +106,19 @@
       </div>
     </div>
 </div>
+
+<style>
+  .carousel-container {
+    width: 100%;
+    aspect-ratio: 16/9;
+    max-height: 80vh; /* Prevents the carousel from being too tall on large screens */
+  }
+
+  /* Ensure images cover the full container while maintaining aspect ratio */
+  :global(.carousel-container .bg-cover) {
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+  }
+</style>
