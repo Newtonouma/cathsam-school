@@ -7,9 +7,12 @@
       <div class="flex justify-between">
         <div class="flex space-x-4">
           <!-- Logo -->
-          <div class="flex items-center py-5 px-2">
-            <a href="/" class="font-bold text-xl">Modern School</a>
-          </div>
+            <div class="flex items-center py-2 px-2"></div>
+            <a href="/" class="flex items-center space-x-2">
+              <img src="programs/logopng.png" alt="Cathsam School Logo" class="h-12 w-auto">
+              <span class="font-bold text-xl">Cathsam School</span>
+            </a>
+            </div>
           <!-- Primary Nav -->
           <div class="hidden md:flex items-center space-x-1">
             <a href="/" class="py-5 px-3 hover:bg-red-700 transition duration-300">Home</a>
