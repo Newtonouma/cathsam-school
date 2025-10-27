@@ -1,13 +1,14 @@
-import adapter from '@sveltejs/adapter-auto'; // Make sure this is the only adapter imported/used
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'; // Or '@sveltejs/kit/vite' depending on setup
+import adapter from '@sveltejs/adapter-vercel';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  preprocess: vitePreprocess(), // Or your specific preprocessor
+  preprocess: vitePreprocess(),
 
   kit: {
-    adapter: adapter(),
-    // If you had paths: { base: '...' } keep it if needed
+    adapter: adapter({
+      runtime: 'nodejs18.x'
+    })
   }
 };
 
