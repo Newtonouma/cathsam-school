@@ -5,11 +5,11 @@
     export let link = '#'; // Or a specific path like '/programs/kindergarten'
   </script>
   
-  <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+<div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
     <img src={imgSrc} alt={title} class="w-full h-48 object-cover">
-    <div class="p-6">
+    <div class="p-6 flex flex-col flex-grow">
       <h3 class="text-xl font-bold text-red-600 mb-2">{title}</h3>
-      <p class="text-gray-600 mb-4">{description}</p>
-      <a href={link} class="inline-block bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition duration-300">Learn More</a>
+      <p class="text-gray-600 mb-4 flex-grow">{description}</p>
+      <a href={link} class="inline-block bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition duration-300 text-center">Learn More</a>
     </div>
   </div>
