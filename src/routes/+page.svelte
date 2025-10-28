@@ -556,14 +556,14 @@
 
   
   <!-- Call to Action -->
-  <section class="relative h-[50vh] flex items-center bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white overflow-hidden">
+  <section class="relative bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white overflow-visible md:overflow-hidden md:h-[50vh] flex items-center py-12 md:py-16">
     <!-- Background Pattern -->
     <div class="absolute inset-0 opacity-10">
       <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
     </div>
     
-    <div class="container mx-auto px-8 relative z-10 h-full flex items-center">
-      <div class="w-full grid lg:grid-cols-2 gap-12 items-center">
+    <div class="container mx-auto px-4 sm:px-6 md:px-8 relative z-10 h-auto md:h-full flex items-center">
+      <div class="w-full grid gap-8 sm:gap-10 lg:gap-12 lg:grid-cols-2 items-center">
         <!-- Left: Content -->
         <div class="text-center lg:text-left">
           <span class="inline-block bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-semibold mb-3">Ready to get started?</span>
