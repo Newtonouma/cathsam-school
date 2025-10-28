@@ -262,7 +262,7 @@
           </div>
 
           <!-- Program Badge -->
-          <div class="absolute top-8 right-8 bg-red-600 text-white px-6 py-3 shadow-xl rounded-full">
+          <div class="absolute right-4 md:right-8 top-[18rem] md:top-8 z-20 bg-red-600 text-white px-6 py-3 shadow-xl rounded-full">
             <p class="font-semibold text-sm">Pre-School • Lower • Junior</p>
           </div>
 
@@ -391,7 +391,7 @@
           </div>
 
           <!-- Program Badge -->
-          <div class="absolute top-8 right-8 bg-red-600 text-white px-6 py-3 shadow-xl rounded-full">
+          <div class="absolute right-4 md:right-8 top-[18rem] md:top-8 z-20 bg-red-600 text-white px-6 py-3 shadow-xl rounded-full">
             <p class="font-semibold text-sm">Day & Boarding</p>
           </div>
 
