@@ -91,13 +91,16 @@
 
       <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 max-w-7xl mx-auto items-center"> 
 
-          <!-- Left: Image -->
-          <div class="max-h-[500px]">
-            <img 
-              src="/images/foundation/craiyon_152456_image.png" 
-              alt="Cathsam School Foundation" 
-              class="w-full h-full object-cover"
-            />
+          <!-- Left: Video (replacing image) -->
+          <div class="h-[500px] w-full overflow-hidden">
+            <video 
+              src="/videos/Good%20Morning%20(Poster).mp4"
+              class="block w-full h-full max-w-full max-h-full object-contain object-center"
+              autoplay
+              loop
+              muted
+              playsinline
+            ></video>
           </div>
 
           <!-- Right: Mission & Vision Cards -->
@@ -235,7 +238,7 @@
     </div>
 
     <!-- Campus Display (Toggleable) -->
-    <div class="min-w-[1400px] mx-auto">
+    <div class="w-full mx-auto">
       {#if selectedCampus === 'umoja'}
       <div class="relative">
         <!-- Hero Image Card -->
