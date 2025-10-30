@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy, tick } from 'svelte';
   import { fade } from 'svelte/transition';
 
   // Default slides data (can be overridden by passing a prop)
@@ -14,6 +14,12 @@
   let activeSlide = 0;
   let interval: ReturnType<typeof setInterval>;
   const intervalDuration = 5000; // ms
+
+  // Refs for hero animations
+  let heroLeft: HTMLElement;
+  let heroRight: HTMLElement;
+  let currentSlideEl: HTMLElement;
+  let gsap: any;
 
   // --- Functions ---
   function nextSlide() {
@@ -45,14 +51,47 @@
     }
   }
 
+  async function runHeroAnimations() {
+    if (!gsap) return;
+    await tick();
+    // Ken Burns subtle zoom on current slide background
+    if (currentSlideEl) {
+      gsap.killTweensOf(currentSlideEl);
+      gsap.fromTo(
+        currentSlideEl,
+        { scale: 1.12, transformOrigin: 'center center', force3D: true },
+        { scale: 1, duration: intervalDuration / 1000, ease: 'power2.out', force3D: true }
+      );
+    }
+    // Overlay text reveal
+    if (heroLeft && heroRight) {
+      gsap.killTweensOf([heroLeft, heroRight]);
+      gsap.fromTo(
+        [heroLeft, heroRight],
+        { y: 32, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 1, ease: 'power3.out', stagger: 0.18, force3D: true, immediateRender: false }
+      );
+    }
+  }
+
   // --- Lifecycle ---
-  onMount(startInterval);
+  onMount(async () => {
+    const mod = await import('gsap');
+    // @ts-ignore
+    gsap = mod.gsap || mod.default || mod;
+    startInterval();
+    runHeroAnimations();
+  });
   onDestroy(() => {
     if (typeof window !== 'undefined') {
       clearInterval(interval);
     }
   });
 
+  // Re-run animations when slide changes
+  $: if (gsap != null && activeSlide >= 0) {
+    runHeroAnimations();
+  }
 </script>
 
 <!-- Modern Hero Section Container -->
@@ -63,10 +102,11 @@
         {#each slides as slide (slide.id || slide.img)} 
           {#if slides[activeSlide]?.id === slide.id || slides[activeSlide]?.img === slide.img} 
             <div
-              class="absolute inset-0 bg-cover bg-center"
+              class="absolute inset-0 bg-cover bg-center hero-bg will-change-transform"
               style="background-image: url('{slide.img}');"
               in:fade={{ duration: 500 }}
               out:fade={{ duration: 500 }}
+              bind:this={currentSlideEl}
             >
              
               <!-- Gradient Overlay -->
@@ -96,13 +136,13 @@
       <div class="container mx-auto px-6 md:px-10 lg:px-16">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-center">
           
-          <div class="text-center md:text-left">
+          <div class="text-center md:text-left will-change-transform" bind:this={heroLeft}>
             <p class="text-sm uppercase tracking-wider text-gray-300 mb-1">WELCOME TO</p>
             <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold uppercase text-red-500 mb-2 leading-tight">CATHSAM SCHOOL</h1>
             <p class="text-base uppercase font-semibold text-gray-200 tracking-wide">"A FIRM FOUNDATION - MSINGI IMARA"</p>
           </div>
           
-          <div>
+          <div class="will-change-transform" bind:this={heroRight}>
             <h2 class="text-2xl md:text-3xl font-bold text-red-500 mb-4">Who We Are</h2>
             <p class="text-gray-200 leading-relaxed mb-6 text-base">
               Cathsam School is a <strong class="text-red-400 font-semibold">Mixed Day & Boarding</strong> school located at Umoja Innercore Nairobi along Moi Drive on spacious and beautiful premises.

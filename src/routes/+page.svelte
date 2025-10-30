@@ -33,31 +33,223 @@
       selectedCampus = selectedCampus === 'umoja' ? 'kamulu' : 'umoja';
     }
 
-    onMount(() => {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting && !statsVisible) {
+    // Refs for GSAP animations
+    let missionSection;
+    let programsSection;
+    let campusSection;
+    let gallerySection;
+    let ctaSection;
+
+    onMount(async () => {
+      const { gsap } = await import('gsap');
+      const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+      gsap.registerPlugin(ScrollTrigger);
+
+
+      // Mission & Vision: timeline with single, reliable ScrollTrigger
+      if (missionSection) {
+        const heading = missionSection.querySelector('h2');
+        const video = missionSection.querySelector('.mv-vid');
+        const cards = missionSection.querySelectorAll('.mv-card');
+
+        const tl = gsap.timeline({
+          defaults: { ease: 'power3.out' },
+          scrollTrigger: {
+            trigger: missionSection,
+            start: 'top 80%', // standard practice threshold
+            once: true,
+            toggleActions: 'play none none none',
+            invalidateOnRefresh: true
+          }
+        });
+
+        if (heading) tl.fromTo(heading, { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.8, immediateRender: false, force3D: true });
+        if (video) tl.fromTo(video, { autoAlpha: 0, y: 50, scale: 0.97 }, { autoAlpha: 1, y: 0, scale: 1, duration: 1.0, immediateRender: false, force3D: true }, '-=0.4');
+        if (cards?.length) tl.fromTo(cards, { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.75, stagger: 0.1, immediateRender: false, force3D: true }, '-=0.2');
+      }
+
+      // Programs cards (staggered reveal)
+      if (programsSection) {
+        const cards = programsSection.querySelectorAll('.program-card');
+        ScrollTrigger.batch(cards, {
+          start: 'top 85%',
+          onEnter: (batch) => gsap.fromTo(
+            batch,
+            { autoAlpha: 0, y: 24 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.6,
+              ease: 'power2.out',
+              stagger: 0.1,
+              immediateRender: false,
+              force3D: true
+            }
+          ),
+          once: true
+        });
+      }
+
+      // Stats counters trigger
+      if (statsSection) {
+        ScrollTrigger.create({
+          trigger: statsSection,
+          start: 'top 70%',
+          once: true,
+          onEnter: () => {
+            if (!statsVisible) {
               statsVisible = true;
               studentsCount.set(500);
               teachersCount.set(45);
               yearsCount.set(15);
               programsCount.set(10);
             }
-          });
-        },
-        { threshold: 0.3 }
-      );
-
-      if (statsSection) {
-        observer.observe(statsSection);
+          }
+        });
       }
 
-      return () => {
-        if (statsSection) {
-          observer.unobserve(statsSection);
+      // Campus info cards
+      if (campusSection) {
+        const infoCards = campusSection.querySelectorAll('.info-card');
+        ScrollTrigger.batch(infoCards, {
+          start: 'top 85%',
+          onEnter: (batch) => gsap.fromTo(
+            batch,
+            { autoAlpha: 0, y: 20 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.55,
+              ease: 'power2.out',
+              stagger: 0.08,
+              immediateRender: false,
+              force3D: true
+            }
+          ),
+          once: true
+        });
+
+        // Campus hero image cards
+        const heroes = campusSection.querySelectorAll('.campus-hero');
+        gsap.fromTo(
+          heroes,
+          { autoAlpha: 0, y: 40, scale: 0.98 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            duration: 1,
+            ease: 'power3.out',
+            force3D: true,
+            scrollTrigger: {
+              trigger: campusSection,
+              start: 'top 85%',
+              once: true,
+              toggleActions: 'play none none none'
+            }
+          }
+        );
+      }
+
+      // Gallery grid columns: animate per-column (2/3/5) and only when in view
+      if (gallerySection) {
+        const items = Array.from(gallerySection.querySelectorAll('[data-gallery-item]'));
+        const mm = gsap.matchMedia();
+
+        function setup(cols) {
+          // group by index modulo cols (CSS grid default flow is row)
+          const groups = Array.from({ length: cols }, () => []);
+          items.forEach((el, i) => groups[i % cols].push(el));
+
+          groups.forEach((col) => {
+            if (!col.length) return;
+            gsap.fromTo(
+              col,
+              { autoAlpha: 0, x: 18, y: 0, scale: 0.99, transformOrigin: 'center center' },
+              {
+                autoAlpha: 1,
+                x: 0,
+                y: 0,
+                scale: 1,
+                duration: 1.1,
+                ease: 'sine.out',
+                stagger: { each: 0.08, from: 'start' },
+                immediateRender: false,
+                force3D: true,
+                scrollTrigger: {
+                  trigger: col[0],
+                  start: 'top 90%',
+                  once: true,
+                  toggleActions: 'play none none none'
+                }
+              }
+            );
+          });
+          return () => {};
         }
-      };
+
+        mm.add({
+          '(max-width: 767px)': () => setup(2),
+          '(min-width: 768px) and (max-width: 1023px)': () => setup(3),
+          '(min-width: 1024px)': () => setup(5)
+        });
+
+        // Refresh on next tick and when gallery images load to avoid stuck hidden tiles
+        requestAnimationFrame(() => {
+          if (window && window.ScrollTrigger) window.ScrollTrigger.refresh();
+        });
+        const imgs = gallerySection.querySelectorAll('img');
+        imgs.forEach((img) => {
+          if (img.complete) return;
+          img.addEventListener('load', () => {
+            if (window && window.ScrollTrigger) window.ScrollTrigger.refresh();
+          }, { once: true });
+        });
+
+        // Fallback: ensure visibility via IntersectionObserver if triggers fail
+        if ('IntersectionObserver' in window) {
+          const io = new IntersectionObserver((entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                const el = e.target;
+                el.classList.remove('reveal-init');
+                el.style.opacity = '1';
+                el.style.visibility = 'visible';
+                el.style.transform = 'none';
+                io.unobserve(el);
+              }
+            });
+          }, { rootMargin: '0px 0px -10% 0px' });
+          items.forEach((el) => io.observe(el));
+        }
+      }
+
+      // CTA section
+      if (ctaSection) {
+        gsap.from(ctaSection, {
+          opacity: 0,
+          y: 24,
+          duration: 0.8,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: ctaSection,
+            start: 'top 80%',
+            once: true,
+            toggleActions: 'play none none none'
+          }
+        });
+      }
+
+      // Refresh triggers after images/fonts load + after video metadata
+      if (typeof window !== 'undefined') {
+        window.addEventListener('load', () => {
+          ScrollTrigger.refresh();
+        });
+        const vid = missionSection?.querySelector('.mv-vid video');
+        if (vid) {
+          vid.addEventListener('loadedmetadata', () => ScrollTrigger.refresh(), { once: true });
+        }
+      }
     });
 
      // Data for gallery - Elementary school focused images from Unsplash
@@ -85,14 +277,14 @@
 
 
 <!-- ===== INSERTED SECTION: Mission & Vision ===== -->
-<section class="py-16 bg-white"> 
+<section bind:this={missionSection} class="py-16 bg-white"> 
   <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-red-600 mb-12 text-center">Our Foundation</h2> 
+      <h2 class="text-3xl font-bold text-red-600 mb-12 text-center reveal-init">Our Foundation</h2> 
 
       <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 max-w-7xl mx-auto items-center"> 
 
           <!-- Left: Video (replacing image) -->
-          <div class="h-[500px] w-full overflow-hidden">
+          <div class="h-[500px] w-full overflow-hidden mv-vid will-change-transform reveal-init">
             <video 
               src="/videos/Good%20Morning%20(Poster).mp4"
               class="block w-full h-full max-w-full max-h-full object-contain object-center"
@@ -106,7 +298,7 @@
           <!-- Right: Mission & Vision Cards -->
           <div class="space-y-6">
             <!-- Mission Card -->
-            <div class="bg-gray-50 p-6 rounded-lg shadow-2xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-shadow duration-300 border-l-4 border-red-600">
+            <div class="bg-gray-50 p-6 rounded-lg shadow-2xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-shadow duration-300 border-l-4 border-red-600 mv-card will-change-transform reveal-init">
                <h3 class="text-2xl font-semibold text-red-700 mb-3">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2 align-text-bottom" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /> </svg>
                   Our Mission
@@ -117,7 +309,7 @@
             </div>
 
             <!-- Vision Card -->
-            <div class="bg-gray-50 p-6 rounded-lg shadow-2xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-shadow duration-300 border-l-4 border-red-600">
+            <div class="bg-gray-50 p-6 rounded-lg shadow-2xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-shadow duration-300 border-l-4 border-red-600 mv-card will-change-transform reveal-init">
                 <h3 class="text-2xl font-semibold text-red-700 mb-3">
                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2 align-text-bottom" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /> </svg>
                    Our Vision
@@ -134,7 +326,7 @@
 
 
 <!-- Programs Section with Carousel -->
-<section class="py-16 bg-gray-50"> 
+<section bind:this={programsSection} class="py-16 bg-gray-50"> 
     <h3 class="text-2xl font-bold text-center text-gray-800 mb-8">Our Programs</h3>
     <div class="container mx-auto px-4 max-w-[1600px]">
       <ProgramsCarousel {programs} />
@@ -209,7 +401,7 @@
 <!-- End Statistics Section -->
 
 <!-- Campus Location Section -->
-<section class="py-20 bg-white relative overflow-hidden">
+<section bind:this={campusSection} class="py-20 bg-white relative overflow-hidden">
   <!-- Background Accent -->
   <div class="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-red-50 to-transparent"></div>
   
@@ -242,7 +434,7 @@
       {#if selectedCampus === 'umoja'}
       <div class="relative">
         <!-- Hero Image Card -->
-        <div class="relative h-[400px] overflow-hidden shadow-2xl group">
+        <div class="relative h-[400px] overflow-hidden shadow-2xl group campus-hero will-change-transform reveal-init">
           <img
             src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&q=80"
             alt="Umoja Campus"
@@ -254,7 +446,7 @@
           <div class="absolute top-8 left-8 bg-white px-8 py-4 shadow-2xl rounded-lg">
             <div class="flex items-center gap-4">
               <div class="h-12 w-1 bg-red-600 rounded-full"></div>
-              <div>
+          <div>
                 <h3 class="text-3xl font-bold text-gray-900">Umoja Campus</h3>
                 <p class="text-red-600 font-medium text-sm">Where learning comes alive</p>
               </div>
@@ -275,7 +467,7 @@
         <!-- Info Cards Grid -->
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 -mt-12 relative z-10">
           <!-- Address Card -->
-          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group">
+          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group info-card will-change-transform reveal-init">
             <div class="flex items-start gap-3">
               <div class="bg-red-100 p-3 rounded-lg group-hover:bg-red-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -291,7 +483,7 @@
           </div>
 
           <!-- Phone Card -->
-          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group">
+          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group info-card will-change-transform reveal-init">
             <div class="flex items-start gap-3">
               <div class="bg-blue-100 p-3 rounded-lg group-hover:bg-blue-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -306,7 +498,7 @@
           </div>
 
           <!-- Email Card -->
-          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group">
+          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group info-card will-change-transform reveal-init">
             <div class="flex items-start gap-3">
               <div class="bg-green-100 p-3 rounded-lg group-hover:bg-green-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -321,7 +513,7 @@
           </div>
 
           <!-- Hours Card -->
-          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group">
+          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group info-card will-change-transform reveal-init">
             <div class="flex items-start gap-3">
               <div class="bg-purple-100 p-3 rounded-lg group-hover:bg-purple-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -371,7 +563,7 @@
       {:else}
       <div class="relative">
         <!-- Hero Image Card -->
-        <div class="relative h-[400px] overflow-hidden shadow-2xl group">
+        <div class="relative h-[400px] overflow-hidden shadow-2xl group campus-hero will-change-transform reveal-init">
           <img
             src="https://images.unsplash.com/photo-1562774053-701939374585?w=1200&q=80"
             alt="Kamulu Campus"
@@ -404,7 +596,7 @@
         <!-- Info Cards Grid -->
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 -mt-12 relative z-10">
           <!-- Address Card -->
-          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group">
+          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group info-card will-change-transform reveal-init">
             <div class="flex items-start gap-3">
               <div class="bg-red-100 p-3 rounded-lg group-hover:bg-red-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -420,7 +612,7 @@
           </div>
 
           <!-- Phone Card -->
-          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group">
+          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group info-card will-change-transform reveal-init">
             <div class="flex items-start gap-3">
               <div class="bg-blue-100 p-3 rounded-lg group-hover:bg-blue-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -435,7 +627,7 @@
           </div>
 
           <!-- Email Card -->
-          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group">
+          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group info-card will-change-transform reveal-init">
             <div class="flex items-start gap-3">
               <div class="bg-green-100 p-3 rounded-lg group-hover:bg-green-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -450,7 +642,7 @@
           </div>
 
           <!-- Hours Card -->
-          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group">
+          <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group info-card will-change-transform reveal-init">
             <div class="flex items-start gap-3">
               <div class="bg-purple-100 p-3 rounded-lg group-hover:bg-purple-600 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -504,7 +696,7 @@
 <!-- End Campus Location Section -->
 
 <!-- Section 3: Gallery -->
-<section class="py-16 bg-white">
+<section bind:this={gallerySection} class="py-16 bg-white">
    <div class="container mx-auto px-4 max-w-[1800px] w-full">
      <!-- Section Header -->
      <div class="text-center mb-12">
@@ -518,7 +710,8 @@
        {#each galleryImages as item, index}
          <a 
            href="/gallery" 
-           class="group relative overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 {index === 0 ? 'lg:col-span-2 lg:row-span-3' : ''} {index === 1 || index === 2 ? 'lg:row-span-2' : ''}"
+           data-gallery-item
+           class="group relative overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 will-change-transform reveal-init {index === 0 ? 'lg:col-span-2 lg:row-span-3' : ''} {index === 1 || index === 2 ? 'lg:row-span-2' : ''}"
          >
            <img
              src={item.img}
@@ -556,7 +749,7 @@
 
   
   <!-- Call to Action -->
-  <section class="relative bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white overflow-visible md:overflow-hidden md:h-[50vh] flex items-center py-12 md:py-16">
+  <section bind:this={ctaSection} class="relative bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white overflow-visible md:overflow-hidden md:h-[50vh] flex items-center py-12 md:py-16">
     <!-- Background Pattern -->
     <div class="absolute inset-0 opacity-10">
       <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
@@ -565,7 +758,7 @@
     <div class="container mx-auto px-4 sm:px-6 md:px-8 relative z-10 h-auto md:h-full flex items-center">
       <div class="w-full grid gap-8 sm:gap-10 lg:gap-12 lg:grid-cols-2 items-center">
         <!-- Left: Content -->
-        <div class="text-center lg:text-left">
+          <div class="text-center md:text-left">
           <span class="inline-block bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-semibold mb-3">Ready to get started?</span>
           <h2 class="text-3xl md:text-4xl xl:text-5xl font-bold mb-3 leading-tight">Join Our School Community</h2>
           <p class="text-base md:text-lg text-white/90 leading-relaxed">Take the first step toward your child's bright future.</p>

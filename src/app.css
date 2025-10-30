@@ -20,6 +20,22 @@ body {
     }
   }
   
+  /* Smoothing for transform animations */
+  .will-change-transform {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Prevent SSR flash: hide until JS runs and GSAP reveals */
+  html.js .reveal-init {
+    opacity: 0;
+    transform: translateY(50px);
+    visibility: hidden;
+  }
+  
   /* Custom carousel height (or define in Carousel.svelte) */
   .carousel-container {
       height: 500px; /* Adjust as needed */
